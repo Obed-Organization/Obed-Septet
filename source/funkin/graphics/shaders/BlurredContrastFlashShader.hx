@@ -22,21 +22,8 @@ class BlurredContrastFlashShader extends FlxRuntimeShader
     return blur = value;
   }
 
-  public var time(default, set):Float = 1;
-
-  function set_time(value:Float):Float
-  {
-    this.setFloat('uTime', value);
-    return time = value;
-  }
-
   function new()
   {
     super(Assets.getText(Paths.frag("blurredContrastFlash")));
-  }
-
-  public function update(elapsed:Float):Void
-  {
-    time += elapsed;
   }
 }
