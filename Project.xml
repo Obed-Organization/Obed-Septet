@@ -62,7 +62,6 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<library name="weekend1" preload="false" />
 		<library name="videos" preload="false" />
 	</section>
-	<library name="art" preload="false" />
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg|*.wav" if="web" />
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3|*.wav" unless="web" />
 	<!-- Videos go in their own library because web never needs to preload them, they can just be streamed. -->
@@ -95,8 +94,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		If we can exclude the `mods` folder from the manifest, we can re-enable this line.
 		<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
 	-->
-	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art" />
-	<assets path="CHANGELOG.md" rename="changelog.txt" library="art" />
+
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
 		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
@@ -182,10 +180,10 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<!-- This macro allows addition of new functionality to existing Flixel. -->
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	<icon path="art/icon16.png" size="16" />
-	<icon path="art/icon32.png" size="32" />
-	<icon path="art/icon64.png" size="64" />
-	<icon path="art/iconOG.png" />
+	<icon path="icon16.png" size="16" />
+	<icon path="icon32.png" size="32" />
+	<icon path="icon64.png" size="64" />
+	<icon path="iconOG.png" />
 	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
 	<haxedef name="CAN_CHEAT" if="switch debug" />
 	<!-- I don't remember what this is for. -->
