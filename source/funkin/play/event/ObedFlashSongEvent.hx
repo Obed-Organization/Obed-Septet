@@ -1,6 +1,7 @@
 package funkin.play.event;
 
 // Data from the chart
+import flixel.graphics.tile.FlxGraphicsShader;
 import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
@@ -16,9 +17,6 @@ import openfl.filters.ShaderFilter;
 @:access(funkin.graphics.shaders.BlurredContrastFlashShader)
 class ObedFlashSongEvent extends SongEvent
 {
-  var flashShader:BlurredContrastFlashShader = new BlurredContrastFlashShader();
-  var flashShaderFilter:ShaderFilter = null;
-
   public function new()
   {
     super('Obed Flash');
@@ -29,16 +27,21 @@ class ObedFlashSongEvent extends SongEvent
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
-    flashShader.contrast = 1;
-    flashShader.blur = 0;
-
-    flashShaderFilter = new ShaderFilter(flashShader);
-    PlayState.instance.camGame.setFilters([flashShaderFilter]);
-    PlayState.instance.camHUD.setFilters([flashShaderFilter]);
-
     var contrast = data.getFloat('contrast');
     var blur = data.getFloat('blur');
     var duration = data.getFloat('duration');
+
+    createFlashShader(contrast, blur, duration);
+  }
+
+  private function createFlashShader(contrast:Float, blur:Float, duration:Float)
+  {
+    final flashShader:BlurredContrastFlashShader = new BlurredContrastFlashShader();
+    flashShader.contrast = 1;
+    flashShader.blur = 0;
+
+    PlayState.instance.camGame.setFilters([new ShaderFilter(flashShader)]);
+    PlayState.instance.camHUD.setFilters([new ShaderFilter(flashShader)]);
 
     FlxTween.tween(flashShader, {contrast: contrast, blur: blur}, 0.01,
       {
@@ -46,8 +49,8 @@ class ObedFlashSongEvent extends SongEvent
           FlxTween.tween(flashShader, {contrast: 1, blur: 0}, duration,
             {
               onComplete: function(twn:FlxTween) {
-                PlayState.instance.camGame.setFilters([]);
-                PlayState.instance.camHUD.setFilters([]);
+                PlayState.instance.camGame.filters.remove(new ShaderFilter(flashShader));
+                PlayState.instance.camHUD.filters.remove(new ShaderFilter(flashShader));
               }
             });
         }
