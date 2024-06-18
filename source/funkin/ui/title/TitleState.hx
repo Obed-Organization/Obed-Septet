@@ -320,7 +320,7 @@ class TitleState extends MusicBeatState
       if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
-      FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
       transitioning = true;
 
       var targetState:NextState = () -> new MainMenuState();
@@ -392,7 +392,7 @@ class TitleState extends MusicBeatState
     FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
 
     FlxG.camera.flash(FlxColor.WHITE, 1);
-    FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
   }
 
   function createCoolText(textArray:Array<String>)

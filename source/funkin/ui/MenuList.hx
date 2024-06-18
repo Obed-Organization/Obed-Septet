@@ -124,7 +124,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     if (newIndex != selectedIndex)
     {
-      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      FunkinSound.playOnce(Paths.sound('scrollMenu'));
       selectItem(newIndex);
     }
 
