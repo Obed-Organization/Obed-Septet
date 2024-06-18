@@ -36,23 +36,30 @@ class ObedFlashSongEvent extends SongEvent
 
   private function createFlashShader(contrast:Float, blur:Float, duration:Float, type:String)
   {
+    // if filters arrays are null then game will crash
     if (PlayState.instance.camGame.filters == null) PlayState.instance.camGame.filters = [];
     if (PlayState.instance.camHUD.filters == null) PlayState.instance.camHUD.filters = [];
 
+    // main shader of the event
     final flashShader:BlurredContrastFlashShader = new BlurredContrastFlashShader();
+    // set default values
     flashShader.contrast = 1;
     flashShader.blur = 0;
 
+    // filter for the flash shader
     final flashShaderFilter:ShaderFilter = new ShaderFilter(flashShader);
+    // apply the filter
     PlayState.instance.camGame.filters.push(flashShaderFilter);
     PlayState.instance.camHUD.filters.push(flashShaderFilter);
 
+    // flash tweens
     FlxTween.tween(flashShader, {contrast: (type == 'out') ? contrast : 1, blur: (type == 'out') ? blur : 0}, 0.01,
       {
         onComplete: function(twn:FlxTween) {
           FlxTween.tween(flashShader, {contrast: (type == 'out') ? 1 : contrast, blur: (type == 'out') ? 0 : blur}, duration,
             {
               onComplete: function(twn:FlxTween) {
+                // remove the filters when event is finished
                 PlayState.instance.camGame.filters.remove(flashShaderFilter);
                 PlayState.instance.camHUD.filters.remove(flashShaderFilter);
               }
