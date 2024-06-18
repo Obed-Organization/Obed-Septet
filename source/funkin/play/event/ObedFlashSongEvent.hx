@@ -29,32 +29,32 @@ class ObedFlashSongEvent extends SongEvent
     var contrast = data.getFloat('contrast');
     var blur = data.getFloat('blur');
     var duration = data.getFloat('duration');
+    var type = data.getString('type');
 
-    createFlashShader(contrast, blur, duration);
+    createFlashShader(contrast, blur, duration, type);
   }
 
-  private function createFlashShader(contrast:Float, blur:Float, duration:Float)
+  private function createFlashShader(contrast:Float, blur:Float, duration:Float, type:String)
   {
+    if (PlayState.instance.camGame.filters == null) PlayState.instance.camGame.filters = [];
+    if (PlayState.instance.camHUD.filters == null) PlayState.instance.camHUD.filters = [];
+
     final flashShader:BlurredContrastFlashShader = new BlurredContrastFlashShader();
     flashShader.contrast = 1;
     flashShader.blur = 0;
 
-    if (PlayState.instance.camGame.filters == null) PlayState.instance.camGame.filters = [new ShaderFilter(flashShader)];
-    else
-      PlayState.instance.camGame.filters.push(new ShaderFilter(flashShader));
+    final flashShaderFilter:ShaderFilter = new ShaderFilter(flashShader);
+    PlayState.instance.camGame.filters.push(flashShaderFilter);
+    PlayState.instance.camHUD.filters.push(flashShaderFilter);
 
-    if (PlayState.instance.camHUD.filters == null) PlayState.instance.camHUD.filters = [new ShaderFilter(flashShader)];
-    else
-      PlayState.instance.camHUD.filters.push(new ShaderFilter(flashShader));
-
-    FlxTween.tween(flashShader, {contrast: contrast, blur: blur}, 0.01,
+    FlxTween.tween(flashShader, {contrast: (type == 'out') ? contrast : 1, blur: (type == 'out') ? blur : 0}, 0.01,
       {
         onComplete: function(twn:FlxTween) {
-          FlxTween.tween(flashShader, {contrast: 1, blur: 0}, duration,
+          FlxTween.tween(flashShader, {contrast: (type == 'out') ? 1 : contrast, blur: (type == 'out') ? 0 : blur}, duration,
             {
               onComplete: function(twn:FlxTween) {
-                PlayState.instance.camGame.filters.remove(new ShaderFilter(flashShader));
-                PlayState.instance.camHUD.filters.remove(new ShaderFilter(flashShader));
+                PlayState.instance.camGame.filters.remove(flashShaderFilter);
+                PlayState.instance.camHUD.filters.remove(flashShaderFilter);
               }
             });
         }
@@ -72,6 +72,7 @@ class ObedFlashSongEvent extends SongEvent
    *   "contrast": FLOAT, // Contrast value.
    *   "blur": FLOAT, // Blur amount.
    *   "length": FLOAT, // Length of the event.
+   *   "type": ENUM, // Type of the event.
    * }
    * @return SongEventSchema
    */
@@ -95,6 +96,13 @@ class ObedFlashSongEvent extends SongEvent
         title: 'Duration',
         type: SongEventFieldType.FLOAT,
         defaultValue: 0.5
+      },
+      {
+        name: 'type',
+        title: 'Type',
+        type: SongEventFieldType.ENUM,
+        keys: ['In' => 'in', 'Out' => 'out'],
+        defaultValue: 'out'
       }
     ]);
   }
