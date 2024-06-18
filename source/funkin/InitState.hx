@@ -27,7 +27,7 @@ import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
-import funkin.ui.title.TitleState;
+import funkin.ui.capcha.CapchaState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
@@ -268,8 +268,7 @@ class InitState extends FlxState
     }
     else
     {
-      FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-      FlxG.switchState(() -> new TitleState());
+      FlxG.switchState(() -> new CapchaState());
     }
   }
 
