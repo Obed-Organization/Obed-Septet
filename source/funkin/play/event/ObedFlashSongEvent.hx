@@ -1,7 +1,6 @@
 package funkin.play.event;
 
 // Data from the chart
-import flixel.graphics.tile.FlxGraphicsShader;
 import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
