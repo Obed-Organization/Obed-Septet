@@ -31,6 +31,7 @@ class ObedFlashSongEvent extends SongEvent
     var duration = data.getFloat('duration');
     var type = data.getString('type');
 
+    // create a new shader EVERY call, otherwise effect wont be that good
     createFlashShader(contrast, blur, duration, type);
   }
 
