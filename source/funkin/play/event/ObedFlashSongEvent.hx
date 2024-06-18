@@ -40,8 +40,13 @@ class ObedFlashSongEvent extends SongEvent
     flashShader.contrast = 1;
     flashShader.blur = 0;
 
-    PlayState.instance.camGame.setFilters([new ShaderFilter(flashShader)]);
-    PlayState.instance.camHUD.setFilters([new ShaderFilter(flashShader)]);
+    if (PlayState.instance.camGame.filters == null) PlayState.instance.camGame.filters = [new ShaderFilter(flashShader)];
+    else
+      PlayState.instance.camGame.filters.push(new ShaderFilter(flashShader));
+
+    if (PlayState.instance.camHUD.filters == null) PlayState.instance.camHUD.filters = [new ShaderFilter(flashShader)];
+    else
+      PlayState.instance.camHUD.filters.push(new ShaderFilter(flashShader));
 
     FlxTween.tween(flashShader, {contrast: contrast, blur: blur}, 0.01,
       {
