@@ -31,6 +31,11 @@ class CapchaState extends MusicBeatState
   {
     super.create();
 
+    #if mobile
+    FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+    FlxG.switchState(() -> new TitleState());
+    #end
+
     FlxG.camera.fade(FlxColor.BLACK, 0.5, true, function() {
       canSelect = true;
     });
