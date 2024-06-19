@@ -1,11 +1,9 @@
 {
   "dependencies": [
     {
-      "name": "discord_rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5",
-      "url": "https://github.com/Aidan63/linc_discord-rpc"
+      "name": "hxdiscord_rpc",
+      "type": "haxelib",
+      "version": "1.1.1"
     },
     {
       "name": "flixel",
@@ -132,8 +130,8 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "develop2",
-      "url": "https://github.com/FunkinDroidTeam/lime"
+      "ref": "mingw-fix",
+      "url": "https://github.com/Obed-Organization/lime.git"
     },
     {
       "name": "mconsole",

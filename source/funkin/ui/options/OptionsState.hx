@@ -162,7 +162,8 @@ class Page extends FlxGroup
   function updateEnabled(elapsed:Float)
   {
     // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
-    if (canExit && (controls.BACK #if mobile || (backButton != null && TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed) #end))
+    if (canExit
+      && (controls.BACK #if mobile || (backButton != null && TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed) #end))
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
@@ -293,6 +294,5 @@ enum abstract PageName(String)
   var Options = "options";
   var Controls = "controls";
   var Colors = "colors";
-  var Mods = "mods";
   var Preferences = "preferences";
 }

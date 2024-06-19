@@ -401,18 +401,6 @@ class FunkinPreloader extends FlxBasePreloader
         {
           initializingScriptsPercent = 0.0;
 
-          /*
-            var future:Future<Array<String>> = []; // PolymodHandler.loadNoModsAsync();
-
-            future.onProgress((loaded:Int, total:Int) -> {
-              trace('PolymodHandler.loadNoModsAsync() progress: ' + loaded + '/' + total);
-              initializingScriptsPercent = loaded / total;
-            });
-            future.onComplete((result:Array<String>) -> {
-              trace('Completed initializing scripts: ' + result);
-            });
-           */
-
           initializingScriptsPercent = 1.0;
           currentState = FunkinPreloaderState.CachingGraphics;
           return 0.0;

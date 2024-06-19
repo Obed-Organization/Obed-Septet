@@ -2,7 +2,7 @@
 <project xmlns="http://lime.openfl.org/project/1.0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
 	<!-- _________________________ Application Settings _________________________ -->
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.funkin.fnf" package="com.funkin.fnf" main="Main" version="0.4.1" company="ninjamuffin99" />
+	<app title="NeforFunk" file="NeforFunk" packageName="com.obedorg.nf" package="com.obedorg.nf" main="Main" version="0.4.1" company="obedorg" />
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
@@ -86,14 +86,6 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<assets path="assets/week7" library="week7" exclude="*.fla|*.mp3|*.wav" unless="web" />
 	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.ogg|*.wav" if="web" />
 	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.mp3|*.wav" unless="web" />
-	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
-	<!--
-		AUTOMATICALLY MOVING EXAMPLE MODS INTO THE BUILD CAUSES ISSUES
-		Currently, this line will add the mod files to the library manifest,
-		which causes issues if the mod is not enabled.
-		If we can exclude the `mods` folder from the manifest, we can re-enable this line.
-		<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
-	-->
 
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
@@ -278,13 +270,5 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<haxedef name="POLYMOD_SCRIPT_LIBRARY" value="scripts" />
 		<!-- The base path from which scripts should be accessed. -->
 		<haxedef name="POLYMOD_ROOT_PATH" value="scripts/" />
-		<!-- Determines the subdirectory of the mod folder used for file appending. -->
-		<haxedef name="POLYMOD_APPEND_FOLDER" value="_append" />
-		<!-- Determines the subdirectory of the mod folder used for file merges. -->
-		<haxedef name="POLYMOD_MERGE_FOLDER" value="_merge" />
-		<!-- Determines the file in the mod folder used for metadata. -->
-		<haxedef name="POLYMOD_MOD_METADATA_FILE" value="_polymod_meta.json" />
-		<!-- Determines the file in the mod folder used for the icon. -->
-		<haxedef name="POLYMOD_MOD_ICON_FILE" value="_polymod_icon.png" />
 	</section>
 </project>

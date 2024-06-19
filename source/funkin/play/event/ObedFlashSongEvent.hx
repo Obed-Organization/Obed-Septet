@@ -18,7 +18,7 @@ class ObedFlashSongEvent extends SongEvent
 {
   public function new()
   {
-    super('Obed Flash');
+    super('ObedFlash');
   }
 
   public override function handleEvent(data:SongEventData)

@@ -15,7 +15,7 @@ class MuteNoteSongEvent extends SongEvent
 {
   public function new()
   {
-    super('Mute Note');
+    super('MuteNote');
   }
 
   public override function handleEvent(data:SongEventData)
