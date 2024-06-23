@@ -28,7 +28,9 @@ class CapchaState extends MusicBeatState
 
   // false = no, true = bus
   var selection:Bool = false;
+
   var canSelect:Bool = false;
+  var canConfirm:Bool = true;
 
   var defaultItemScale:Float = 0.4;
 
@@ -67,30 +69,34 @@ class CapchaState extends MusicBeatState
   {
     super.update(elapsed);
 
+    canConfirm = true;
+
     no.updateSelection(!selection, defaultItemScale);
     bus.updateSelection(selection, defaultItemScale);
 
     if (canSelect)
     {
-      if (FlxG.mouse.overlaps(no) #if mobile || TouchUtil.overlaps(no) && TouchUtil.justPressed #end)
+      if (#if !mobile FlxG.mouse.overlaps(no) #else TouchUtil.overlaps(no) && TouchUtil.justPressed #end)
       {
         if (selection)
         {
+          canConfirm = false;
           selection = false;
           FunkinSound.playOnce(Paths.sound('scrollMenu'));
         }
 
-        if (FlxG.mouse.justPressed #if mobile || TouchUtil.overlaps(no) && TouchUtil.justPressed #end) confirm();
+        if (#if !mobile FlxG.mouse.justPressed #else TouchUtil.overlaps(no) && TouchUtil.justPressed #end && canConfirm) confirm();
       }
-      else if (FlxG.mouse.overlaps(bus) #if mobile || TouchUtil.overlaps(bus) && TouchUtil.justPressed #end)
+      else if (#if !mobile FlxG.mouse.overlaps(bus) #else TouchUtil.overlaps(bus) && TouchUtil.justPressed #end)
       {
         if (!selection)
         {
+          canConfirm = false;
           selection = true;
           FunkinSound.playOnce(Paths.sound('scrollMenu'));
         }
 
-        if (FlxG.mouse.justPressed #if mobile || TouchUtil.overlaps(bus) && TouchUtil.justPressed #end) confirm();
+        if (#if !mobile FlxG.mouse.justPressed #else TouchUtil.overlaps(bus) && TouchUtil.justPressed #end && canConfirm) confirm();
       }
 
       if (controls.UI_LEFT_P || controls.UI_RIGHT_P)
