@@ -27,11 +27,11 @@ using StringTools;
 // Annotation embeds the asset in the executable for faster loading.
 // Polymod can't override this, so we can't use this technique elsewhere.
 
-@:bitmap("preloaderArt.png")
+@:bitmap("art/preloaderArt.png")
 class LogoImage extends BitmapData {}
 
 #if TOUCH_HERE_TO_PLAY
-@:bitmap('touchHereToPlay.png')
+@:bitmap('art/touchHereToPlay.png')
 class TouchHereToPlayImage extends BitmapData {}
 #end
 
