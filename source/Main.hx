@@ -65,6 +65,7 @@ class Main extends Sprite
     funkin.util.logging.AnsiTrace.traceBF();
 
     #if mobile
+    FlxG.mouse.enabled = false;
     funkin.mobile.util.StorageUtil.copyNecessaryFiles(['mp4' => 'assets/videos']);
     #end
 
