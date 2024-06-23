@@ -74,12 +74,22 @@ class CapchaState extends MusicBeatState
     {
       if (FlxG.mouse.overlaps(no) #if mobile || TouchUtil.overlaps(no) && TouchUtil.justPressed #end)
       {
-        selection = false;
+        if (selection)
+        {
+          selection = false;
+          FunkinSound.playOnce(Paths.sound('scrollMenu'));
+        }
+
         if (FlxG.mouse.justPressed #if mobile || TouchUtil.overlaps(no) && TouchUtil.justPressed #end) confirm();
       }
       else if (FlxG.mouse.overlaps(bus) #if mobile || TouchUtil.overlaps(bus) && TouchUtil.justPressed #end)
       {
-        selection = true;
+        if (!selection)
+        {
+          selection = true;
+          FunkinSound.playOnce(Paths.sound('scrollMenu'));
+        }
+
         if (FlxG.mouse.justPressed #if mobile || TouchUtil.overlaps(bus) && TouchUtil.justPressed #end) confirm();
       }
 

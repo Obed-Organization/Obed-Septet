@@ -13,6 +13,7 @@ class CapchaCheckmark extends FunkinSprite
 
     loadTexture((isRightAnswer) ? 'capcha/correct' : 'capcha/wrong');
     this.zIndex = zIndex;
+    if (!isRightAnswer) this.x += 2.5;
     this.y += isRightAnswer ? 5 : 2.5;
     if (isRightAnswer) this.scale.set(scale, scale);
     else
