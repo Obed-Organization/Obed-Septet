@@ -218,11 +218,6 @@ class StoryMenuState extends MusicBeatState
     changeLevel();
     refresh();
 
-    #if discord_rpc
-    // Updating Discord Rich Presence
-    DiscordClient.changePresence('In the Menus', null);
-    #end
-
     #if mobile
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
     #end

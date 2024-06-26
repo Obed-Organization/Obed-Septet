@@ -195,14 +195,6 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<!-- Difficulty, only used for week or song, defaults to 1 -->
 		<!-- <haxedef name="dif" value="2" if="debug"/> -->
 	</section>
-	<section if="newgrounds">
-		<!-- Enables Ng.core.verbose -->
-		<!-- <haxedef name="NG_VERBOSE" /> -->
-		<!-- Enables a NG debug session, so medals don't permently unlock -->
-		<!-- <haxedef name="NG_DEBUG" /> -->
-		<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
-		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
-	</section>
 
 	<!-- Uncomment this to wipe your input settings. -->
 	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->

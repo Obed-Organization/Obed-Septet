@@ -48,7 +48,6 @@ import funkin.modding.events.ScriptEvent;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
@@ -623,8 +622,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
     this.scrollPositionInPixels = this.scrollPositionInPixels;
-    // Characters have probably changed too.
-    healthIconsDirty = true;
 
     return isViewDownscroll;
   }
@@ -891,11 +888,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var noteDisplayDirty:Bool = true;
 
   var noteTooltipsDirty:Bool = true;
-
-  /**
-   * Whether the selected charactesr have been modified and the health icons need to be updated.
-   */
-  var healthIconsDirty:Bool = true;
 
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
@@ -2071,16 +2063,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var selectionBoxSprite:Null<FlxSliceSprite> = null;
 
   /**
-   * The opponent's health icon.
-   */
-  var healthIconDad:Null<HealthIcon> = null;
-
-  /**
-   * The player's health icon.
-   */
-  var healthIconBF:Null<HealthIcon> = null;
-
-  /**
    * The text that pop's up when copying something
    */
   var txtCopyNotif:Null<FlxText> = null;
@@ -2474,20 +2456,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playheadBlock.y = -PLAYHEAD_HEIGHT / 2;
     gridPlayhead.add(playheadBlock);
 
-    // Character icons.
-    healthIconDad = new HealthIcon(currentSongMetadata.playData.characters.opponent);
-    healthIconDad.autoUpdate = false;
-    healthIconDad.size.set(0.5, 0.5);
-    add(healthIconDad);
-    healthIconDad.zIndex = 30;
-
-    healthIconBF = new HealthIcon(currentSongMetadata.playData.characters.player);
-    healthIconBF.autoUpdate = false;
-    healthIconBF.size.set(0.5, 0.5);
-    healthIconBF.flipX = true;
-    add(healthIconBF);
-    healthIconBF.zIndex = 30;
-
     add(audioWaveforms);
   }
 
@@ -2717,21 +2685,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (!Preferences.debugDisplay) menubar.paddingLeft = null;
 
     this.setupNotifications();
-
-    // Setup character dropdowns.
-    FlxMouseEvent.add(healthIconDad, function(_) {
-      if (!isCursorOverHaxeUI)
-      {
-        this.openCharacterDropdown(CharacterType.DAD, true);
-      }
-    });
-
-    FlxMouseEvent.add(healthIconBF, function(_) {
-      if (!isCursorOverHaxeUI)
-      {
-        this.openCharacterDropdown(CharacterType.BF, true);
-      }
-    });
 
     buttonSelectOpponent = new Button();
     buttonSelectOpponent.allowFocus = false;
@@ -3295,7 +3248,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handlePlaybar();
     handlePlayhead();
     handleNotePreview();
-    handleHealthIcons();
 
     handleFileKeybinds();
     handleEditKeybinds();
@@ -3337,12 +3289,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // dispatchEvent gets called here.
     if (!super.stepHit()) return false;
-
-    if (audioInstTrack != null && audioInstTrack.isPlaying)
-    {
-      if (healthIconDad != null) healthIconDad.onStepHit(Conductor.instance.currentStep);
-      if (healthIconBF != null) healthIconBF.onStepHit(Conductor.instance.currentStep);
-    }
 
     // Updating these every step keeps it more accurate.
     // playerPreviewDirty = true;
@@ -4102,8 +4048,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             || (cursorY % 40) < (GRID_SELECTION_BORDER_WIDTH / 2) || (cursorY % 40) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2)));
 
       var overlapsSelection:Bool = FlxG.mouse.overlaps(renderedSelectionSquares);
-
-      var overlapsHealthIcons:Bool = FlxG.mouse.overlaps(healthIconBF) || FlxG.mouse.overlaps(healthIconDad);
 
       if (FlxG.mouse.justPressedMiddle)
       {
@@ -4959,10 +4903,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             {
               targetCursorMode = Cell;
             }
-            else if (overlapsHealthIcons)
-            {
-              targetCursorMode = Pointer;
-            }
           }
         }
       }
@@ -5018,11 +4958,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       if (currentSongMetadata.playData.characters.player != charPlayer.charId)
       {
-        if (healthIconBF != null)
-        {
-          healthIconBF.characterId = currentSongMetadata.playData.characters.player;
-        }
-
         charPlayer.loadCharacter(currentSongMetadata.playData.characters.player);
         charPlayer.characterType = CharacterType.BF;
         charPlayer.flip = true;
@@ -5057,11 +4992,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       if (currentSongMetadata.playData.characters.opponent != charPlayer.charId)
       {
-        if (healthIconDad != null)
-        {
-          healthIconDad.characterId = currentSongMetadata.playData.characters.opponent;
-        }
-
         charPlayer.loadCharacter(currentSongMetadata.playData.characters.opponent);
         charPlayer.characterType = CharacterType.DAD;
         charPlayer.flip = false;
@@ -5358,57 +5288,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
       currentLiveInputPlaceNoteData[column] = null;
       gridPlayheadGhostHoldNotes[column].noteData = null;
-    }
-  }
-
-  /**
-   * Handle aligning the health icons next to the grid.
-   */
-  function handleHealthIcons():Void
-  {
-    if (healthIconsDirty)
-    {
-      var charDataBF = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.player);
-      var charDataDad = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
-      if (healthIconBF != null)
-      {
-        healthIconBF.configure(charDataBF?.healthIcon);
-        healthIconBF.size *= 0.5; // Make the icon smaller in Chart Editor.
-        healthIconBF.flipX = !healthIconBF.flipX; // BF faces the other way.
-      }
-      if (buttonSelectPlayer != null)
-      {
-        buttonSelectPlayer.text = charDataBF?.name ?? 'Player';
-      }
-      if (healthIconDad != null)
-      {
-        healthIconDad.configure(charDataDad?.healthIcon);
-        healthIconDad.size *= 0.5; // Make the icon smaller in Chart Editor.
-      }
-      if (buttonSelectOpponent != null)
-      {
-        buttonSelectOpponent.text = charDataDad?.name ?? 'Opponent';
-      }
-      healthIconsDirty = false;
-    }
-
-    // Right align, and visibly center, the BF health icon.
-    if (healthIconBF != null)
-    {
-      // Base X position to the right of the grid.
-      var xOffset = 45 - (healthIconBF.width / 2);
-      healthIconBF.x = (gridTiledSprite == null) ? (0) : (GRID_X_POS + gridTiledSprite.width + xOffset);
-      var yOffset = 30 - (healthIconBF.height / 2);
-      healthIconBF.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT) + yOffset;
-    }
-
-    // Visibly center the Dad health icon.
-    if (healthIconDad != null)
-    {
-      var xOffset = 75 + (healthIconDad.width / 2);
-      healthIconDad.x = (gridTiledSprite == null) ? (0) : (GRID_X_POS - xOffset);
-      var yOffset = 30 - (healthIconDad.height / 2);
-      healthIconDad.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT) + yOffset;
     }
   }
 
@@ -6368,9 +6247,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
-
-    // Many things get reset when song length changes.
-    healthIconsDirty = true;
   }
 
   function hardRefreshOffsetsToolbox():Void

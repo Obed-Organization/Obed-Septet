@@ -4,7 +4,6 @@ import flixel.math.FlxPoint;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.components.HealthIcon;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.SortUtil;
 import haxe.ui.components.Label;
@@ -44,26 +43,8 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       default: throw 'Invalid charType: ' + charType;
     };
 
-    // Position this menu.
-    var targetHealthIcon:Null<HealthIcon> = switch (charType)
-    {
-      case BF: chartEditorState.healthIconBF;
-      case DAD: chartEditorState.healthIconDad;
-      default: null;
-    };
-
-    if (lockPosition && targetHealthIcon != null)
-    {
-      var healthIconBottomCenter:FlxPoint = new FlxPoint(targetHealthIcon.x + targetHealthIcon.width / 2, targetHealthIcon.y + targetHealthIcon.height);
-
-      this.x = healthIconBottomCenter.x - this.width / 2;
-      this.y = healthIconBottomCenter.y;
-    }
-    else
-    {
-      this.x = Screen.instance.currentMouseX;
-      this.y = Screen.instance.currentMouseY;
-    }
+    this.x = Screen.instance.currentMouseX;
+    this.y = Screen.instance.currentMouseY;
 
     var charGrid = new Grid();
     charGrid.columns = 5;
@@ -107,7 +88,6 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
           default: throw 'Invalid charType: ' + charType;
         };
 
-        chartEditorState.healthIconsDirty = true;
         chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       };
 

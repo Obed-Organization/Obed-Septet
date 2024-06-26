@@ -30,12 +30,7 @@ import openfl.events.NetStatusEvent;
 import funkin.ui.freeplay.FreeplayState;
 import openfl.media.Video;
 import openfl.net.NetStream;
-import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
-#if mobile
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
-#end
 
 class TitleState extends MusicBeatState
 {
@@ -314,10 +309,6 @@ class TitleState extends MusicBeatState
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
-      // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
-      NGio.unlockMedal(60960);
-      // If it's Friday according to da clock
-      if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'));

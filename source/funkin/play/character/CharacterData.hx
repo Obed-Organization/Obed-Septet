@@ -393,7 +393,6 @@ class CharacterDataParser
   static final DEFAULT_LOOP:Bool = false;
   static final DEFAULT_NAME:String = 'Untitled Character';
   static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
-  static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
   static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   static final DEFAULT_SCALE:Float = 1;
   static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -453,38 +452,6 @@ class CharacterDataParser
       input.cameraOffsets = DEFAULT_OFFSETS;
     }
 
-    if (input.healthIcon == null)
-    {
-      input.healthIcon =
-        {
-          id: null,
-          scale: null,
-          flipX: null,
-          isPixel: null,
-          offsets: null
-        };
-    }
-
-    if (input.healthIcon.id == null)
-    {
-      input.healthIcon.id = id;
-    }
-
-    if (input.healthIcon.scale == null)
-    {
-      input.healthIcon.scale = DEFAULT_SCALE;
-    }
-
-    if (input.healthIcon.flipX == null)
-    {
-      input.healthIcon.flipX = DEFAULT_FLIPX;
-    }
-
-    if (input.healthIcon.offsets == null)
-    {
-      input.healthIcon.offsets = DEFAULT_OFFSETS;
-    }
-
     if (input.startingAnimation == null)
     {
       input.startingAnimation = DEFAULT_STARTINGANIM;
@@ -498,11 +465,6 @@ class CharacterDataParser
     if (input.isPixel == null)
     {
       input.isPixel = DEFAULT_ISPIXEL;
-    }
-
-    if (input.healthIcon.isPixel == null)
-    {
-      input.healthIcon.isPixel = input.isPixel;
     }
 
     if (input.danceEvery == null)
@@ -636,11 +598,6 @@ typedef CharacterData =
    */
   var scale:Null<Float>;
 
-  /**
-   * Optional data about the health icon for the character.
-   */
-  var healthIcon:Null<HealthIconData>;
-
   var death:Null<DeathData>;
 
   /**
@@ -700,41 +657,6 @@ typedef CharacterData =
    */
   var flipX:Null<Bool>;
 };
-
-/**
- * The JSON data schema used to define the health icon for a character.
- */
-typedef HealthIconData =
-{
-  /**
-   * The ID to use for the health icon.
-   * @default The character's ID
-   */
-  var id:Null<String>;
-
-  /**
-   * The scale of the health icon.
-   */
-  var scale:Null<Float>;
-
-  /**
-   * Whether to flip the health icon horizontally.
-   * @default false
-   */
-  var flipX:Null<Bool>;
-
-  /**
-   * Multiply scale by 6 and disable antialiasing
-   * @default false
-   */
-  var isPixel:Null<Bool>;
-
-  /**
-   * The offset of the health icon, in pixels.
-   * @default [0, 25]
-   */
-  var offsets:Null<Array<Float>>;
-}
 
 typedef DeathData =
 {

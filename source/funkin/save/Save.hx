@@ -70,13 +70,6 @@ class Save
       volume: 1.0,
       mute: false,
 
-      api:
-        {
-          newgrounds:
-            {
-              sessionId: null,
-            }
-        },
       scores:
         {
           // No saved scores.
@@ -161,23 +154,6 @@ class Save
     return data.mobileOptions;
   }
   #end
-
-  /**
-   * The current session ID for the logged-in Newgrounds user, or null if the user is cringe.
-   */
-  public var ngSessionId(get, set):Null<String>;
-
-  function get_ngSessionId():Null<String>
-  {
-    return data.api.newgrounds.sessionId;
-  }
-
-  function set_ngSessionId(value:Null<String>):Null<String>
-  {
-    data.api.newgrounds.sessionId = value;
-    flush();
-    return data.api.newgrounds.sessionId;
-  }
 
   public var chartEditorPreviousFiles(get, set):Array<String>;
 
@@ -934,8 +910,6 @@ typedef RawSaveData =
    */
   var version:Version;
 
-  var api:SaveApiData;
-
   /**
    * The user's saved scores.
    */
@@ -964,16 +938,6 @@ typedef RawSaveData =
    */
   var optionsChartEditor:SaveDataChartEditorOptions;
 };
-
-typedef SaveApiData =
-{
-  var newgrounds:SaveApiNewgroundsData;
-}
-
-typedef SaveApiNewgroundsData =
-{
-  var sessionId:Null<String>;
-}
 
 /**
  * An anoymous structure containing options about the user's high scores.

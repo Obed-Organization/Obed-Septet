@@ -13,6 +13,9 @@ import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 import funkin.input.Controls;
+import flixel.FlxG;
+import openfl.system.System;
+import openfl.utils.Assets;
 #if mobile
 import funkin.graphics.FunkinCamera;
 import funkin.mobile.ui.FunkinHitbox;
@@ -100,6 +103,23 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   }
   #end
 
+  public static function dumpUnpreloadedImages()
+  {
+    @:privateAccess
+    for (key in FlxG.bitmap._cache.keys())
+    {
+      var obj = FlxG.bitmap._cache.get(key);
+      if (obj != null && key.startsWith('assets/shared/characters') || key.startsWith('assets/week'))
+      {
+        Assets.cache.removeBitmapData(key);
+        FlxG.bitmap._cache.remove(key);
+        obj.destroy();
+        openfl.Assets.cache.removeBitmapData(key);
+      }
+    }
+    System.gc();
+  }
+
   override function create():Void
   {
     super.create();
@@ -117,6 +137,8 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     #if mobile
     if (camControls != null) FlxG.cameras.remove(camControls);
     #end
+
+    dumpUnpreloadedImages();
 
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);

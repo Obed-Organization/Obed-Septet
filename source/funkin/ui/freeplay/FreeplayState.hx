@@ -255,11 +255,6 @@ class FreeplayState extends MusicBeatSubState
       stickerSubState.degenStickers();
     }
 
-    #if discord_rpc
-    // Updating Discord Rich Presence
-    DiscordClient.changePresence('In the Menus', null);
-    #end
-
     var isDebug:Bool = false;
 
     #if debug

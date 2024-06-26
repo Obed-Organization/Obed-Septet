@@ -405,7 +405,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         stageCharData = _data.characters.bf;
         character.flipX = !character.getDataFlipX();
         character.name = 'bf';
-        character.initHealthIcon(false);
       case GF:
         this.characters.set('gf', character);
         stageCharData = _data.characters.gf;
@@ -416,7 +415,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         stageCharData = _data.characters.dad;
         character.flipX = character.getDataFlipX();
         character.name = 'dad';
-        character.initHealthIcon(true);
       default:
         this.characters.set(character.characterId, character);
     }

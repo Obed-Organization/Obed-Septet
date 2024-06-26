@@ -16,7 +16,6 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
@@ -37,7 +36,6 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.ComboMilestone;
-import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
@@ -66,9 +64,6 @@ import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 import funkin.mobile.util.TouchUtil;
-#if discord_rpc
-import Discord.DiscordClient;
-#end
 
 /**
  * Parameters used to initialize the PlayState.
@@ -400,7 +395,13 @@ class PlayState extends MusicBeatSubState
    * The displayed value of the player's health.
    * Used to provide smooth animations based on linear interpolation of the player's health.
    */
-  var healthLerp:Float = Constants.HEALTH_STARTING;
+  var healthLerpP1:Float = Constants.HEALTH_STARTING;
+
+  /**
+   * The displayed value of enemy's health.
+   * Used to provide smooth animations based on linear interpolation of the player's health.
+   */
+  var healthLerpP2:Float = Constants.HEALTH_STARTING;
 
   /**
    * How long the user has held the "Skip Video Cutscene" button for.
@@ -444,14 +445,6 @@ class PlayState extends MusicBeatSubState
    */
   public var vocals:VoicesGroup;
 
-  #if discord_rpc
-  // Discord RPC variables
-  var storyDifficultyText:String = '';
-  var iconRPC:String = '';
-  var detailsText:String = '';
-  var detailsPausedText:String = '';
-  #end
-
   /**
    * RENDER OBJECTS
    */
@@ -462,25 +455,25 @@ class PlayState extends MusicBeatSubState
 
   /**
    * The bar which displays the player's health.
-   * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
+   * Dynamically updated based on the value of `healthLerpP1` (which is based on `health`).
    */
-  public var healthBar:FlxBar;
+  public var barP1:FlxBar;
 
   /**
-   * The background image used for the health bar.
-   * Emma says the image is slightly skewed so I'm leaving it as an image instead of a `createGraphic`.
+   * The bar which displays the enemy's health.
+   * Dynamically updated based on the value of `healthLerpP2` (which is based on `health`).
    */
-  public var healthBarBG:FunkinSprite;
+  public var barP2:FlxBar;
 
   /**
-   * The health icon representing the player.
+   * The background image used for player's bar.
    */
-  public var iconP1:HealthIcon;
+  public var barLineP1:FunkinSprite;
 
   /**
-   * The health icon representing the opponent.
+   * The background image used for enemy's bar.
    */
-  public var iconP2:HealthIcon;
+  public var barLineP2:FunkinSprite;
 
   /**
    * The sprite group containing active player's strumline notes.
@@ -695,7 +688,7 @@ class PlayState extends MusicBeatSubState
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
-    initHealthBar();
+    initHealthBars();
     if (!isMinimalMode)
     {
       initStage();
@@ -717,11 +710,6 @@ class PlayState extends MusicBeatSubState
     comboPopUps.zIndex = 900;
     add(comboPopUps);
     comboPopUps.cameras = [camHUD];
-
-    #if discord_rpc
-    // Initialize Discord Rich Presence.
-    initDiscord();
-    #end
 
     // Read the song's note data and pass it to the strumlines.
     generateSong();
@@ -861,7 +849,7 @@ class PlayState extends MusicBeatSubState
     super.update(elapsed);
 
     var list = FlxG.sound.list;
-    updateHealthBar();
+    updateHealthBars();
     updateScoreText();
 
     // Handle restarting the song when needed (player death or pressing Retry)
@@ -1018,10 +1006,6 @@ class PlayState extends MusicBeatSubState
           openSubState(pauseSubState);
           // boyfriendPos.put(); // TODO: Why is this here?
         }
-
-        #if discord_rpc
-        DiscordClient.changePresence(detailsPausedText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
-        #end
       }
     }
 
@@ -1107,11 +1091,6 @@ class PlayState extends MusicBeatSubState
           // Transition immediately.
           moveToGameOver();
         }
-
-        #if discord_rpc
-        // Game Over doesn't get his own variable because it's only used here
-        DiscordClient.changePresence('Game Over - ' + detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
-        #end
       }
       else if (isPlayerDying)
       {
@@ -1142,15 +1121,10 @@ class PlayState extends MusicBeatSubState
     updateScoreText();
 
     health = Constants.HEALTH_STARTING;
-    healthLerp = health;
+    healthLerpP1 = healthLerpP2 = health;
 
-    healthBar.value = healthLerp;
-
-    if (!isMinimalMode)
-    {
-      iconP1.updatePosition();
-      iconP2.updatePosition();
-    }
+    barP1.value = healthLerpP1;
+    barP2.value = healthLerpP2;
 
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
@@ -1319,18 +1293,6 @@ class PlayState extends MusicBeatSubState
       // Resume the countdown.
       Countdown.resumeCountdown();
 
-      #if discord_rpc
-      if (startTimer.finished)
-      {
-        DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
-          currentSongLengthMs - Conductor.instance.songPosition);
-      }
-      else
-      {
-        DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
-      }
-      #end
-
       justUnpaused = true;
     }
     else if (Std.isOfType(subState, Transition))
@@ -1340,39 +1302,6 @@ class PlayState extends MusicBeatSubState
 
     super.closeSubState();
   }
-
-  #if discord_rpc
-  /**
-   * Function called when the game window gains focus.
-   */
-  public override function onFocus():Void
-  {
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
-    {
-      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
-        + ' ('
-        + storyDifficultyText
-        + ')', iconRPC, true,
-        currentSongLengthMs
-        - Conductor.instance.songPosition);
-      else
-        DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
-    }
-
-    super.onFocus();
-  }
-
-  /**
-   * Function called when the game window loses focus.
-   */
-  public override function onFocusLost():Void
-  {
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
-      currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
-
-    super.onFocusLost();
-  }
-  #end
 
   /**
    * Removes any references to the current stage, then clears the stage cache,
@@ -1454,9 +1383,6 @@ class PlayState extends MusicBeatSubState
       trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
       resyncVocals();
     }
-
-    if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.instance.currentStep));
-    if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.instance.currentStep));
 
     return true;
   }
@@ -1589,32 +1515,44 @@ class PlayState extends MusicBeatSubState
   /**
    * Initializes the health bar on the HUD.
    */
-  function initHealthBar():Void
+  function initHealthBars():Void
   {
-    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
-    healthBarBG.screenCenter(X);
-    healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
-    add(healthBarBG);
+    barLineP1 = FunkinSprite.create(200, 250, 'healthBars/hpbarline');
+    barLineP1.scale.set(0.3, 0.3);
+    barLineP1.zIndex = 800;
+    barLineP1.flipX = true;
+    add(barLineP1);
 
-    healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-      'healthLerp', 0, 2);
-    healthBar.scrollFactor.set();
-    healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    healthBar.zIndex = 801;
-    add(healthBar);
+    barP1 = new FlxBar(barLineP1.x, barLineP1.y, LEFT_TO_RIGHT, Std.int(barLineP1.width), Std.int(barLineP1.height), this, 'healthLerpP1', 0, 2);
+    barP1.scale.set(0.3, 0.3);
+    barP1.zIndex = barLineP1.zIndex + 1;
+    barP1.flipX = true;
+    barP1.createImageBar(Paths.image('healthBars/hpotric'), Paths.image('healthBars/hppolicgolda'));
+    add(barP1);
+
+    barLineP2 = FunkinSprite.create(-500, 250, 'healthBars/hpbarline');
+    barLineP2.scale.set(0.3, 0.3);
+    barLineP2.zIndex = 800;
+    add(barLineP2);
+
+    barP2 = new FlxBar(barLineP2.x, barLineP2.y, LEFT_TO_RIGHT, Std.int(barLineP2.width), Std.int(barLineP2.height), this, 'healthLerpP2', 0, 2);
+    barP2.scale.set(0.3, 0.3);
+    barP2.zIndex = barLineP2.zIndex + 1;
+    barP2.createImageBar(Paths.image('healthBars/hpotric'), Paths.image('healthBars/hppolicBF'));
+    add(barP2);
 
     // The score text below the health bar.
-    scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
+    scoreText = new FlxText(barP2.x + barP2.width - 190, barP2.y + 30, 0, '', 20);
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
-    add(scoreText);
+    // add(scoreText);
 
-    // Move the health bar to the HUD camera.
-    healthBar.cameras = [camHUD];
-    healthBarBG.cameras = [camHUD];
+    // Move the bars to the HUD camera.
+    barLineP1.cameras = [camHUD];
+    barP1.cameras = [camHUD];
+    barLineP2.cameras = [camHUD];
+    barP2.cameras = [camHUD];
     scoreText.cameras = [camHUD];
   }
 
@@ -1718,40 +1656,14 @@ class PlayState extends MusicBeatSubState
     //
     var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
 
-    if (dad != null)
-    {
-      dad.characterType = CharacterType.DAD;
-
-      //
-      // OPPONENT HEALTH ICON
-      //
-      iconP2 = new HealthIcon('dad', 1);
-      iconP2.y = healthBar.y - (iconP2.height / 2);
-      dad.initHealthIcon(true); // Apply the character ID here
-      iconP2.zIndex = 850;
-      add(iconP2);
-      iconP2.cameras = [camHUD];
-    }
+    if (dad != null) dad.characterType = CharacterType.DAD;
 
     //
     // BOYFRIEND
     //
     var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.player);
 
-    if (boyfriend != null)
-    {
-      boyfriend.characterType = CharacterType.BF;
-
-      //
-      // PLAYER HEALTH ICON
-      //
-      iconP1 = new HealthIcon('bf', 0);
-      iconP1.y = healthBar.y - (iconP1.height / 2);
-      boyfriend.initHealthIcon(false); // Apply the character ID here
-      iconP1.zIndex = 850;
-      add(iconP1);
-      iconP1.cameras = [camHUD];
-    }
+    if (boyfriend != null) boyfriend.characterType = CharacterType.BF;
 
     //
     // ADD CHARACTERS TO SCENE
@@ -1828,35 +1740,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.fadeInArrows();
       opponentStrumline.fadeInArrows();
     }
-  }
-
-  /**
-   * Initializes the Discord Rich Presence.
-   */
-  function initDiscord():Void
-  {
-    #if discord_rpc
-    storyDifficultyText = difficultyString();
-    iconRPC = currentSong.player2;
-
-    // To avoid having duplicate images in Discord assets
-    switch (iconRPC)
-    {
-      case 'senpai-angry':
-        iconRPC = 'senpai';
-      case 'monster-christmas':
-        iconRPC = 'monster';
-      case 'mom-car':
-        iconRPC = 'mom';
-    }
-
-    // String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-    detailsText = isStoryMode ? 'Story Mode: Week $storyWeek' : 'Freeplay';
-    detailsPausedText = 'Paused - $detailsText';
-
-    // Updating Discord Rich Presence.
-    DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
-    #end
   }
 
   function initPreciseInputs():Void
@@ -2051,11 +1934,6 @@ class PlayState extends MusicBeatSubState
     vocals.pitch = playbackRate;
     resyncVocals();
 
-    #if discord_rpc
-    // Updating Discord Rich Presence (with Time Left)
-    DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
-    #end
-
     if (startTimestamp > 0)
     {
       // FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
@@ -2102,15 +1980,17 @@ class PlayState extends MusicBeatSubState
   /**
    * Updates the values of the health bar.
    */
-  function updateHealthBar():Void
+  function updateHealthBars():Void
   {
     if (isBotPlayMode)
     {
-      healthLerp = Constants.HEALTH_MAX;
+      healthLerpP1 = Constants.HEALTH_MAX;
+      healthLerpP2 = 0;
     }
     else
     {
-      healthLerp = FlxMath.lerp(healthLerp, health, 0.15);
+      healthLerpP1 = FlxMath.lerp(healthLerpP1, health, 0.15);
+      healthLerpP2 = Constants.HEALTH_MAX - healthLerpP1;
     }
   }
 
@@ -2681,9 +2561,6 @@ class PlayState extends MusicBeatSubState
     if (FlxG.keys.justPressed.THREE) health -= 0.05 * Constants.HEALTH_MAX;
     #end
 
-    // 9: Toggle the old icon.
-    if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
-
     #if (debug || FORCE_DEBUG_VERSION)
     // PAGEUP: Skip forward two sections.
     // SHIFT+PAGEUP: Skip forward twenty sections.
@@ -2923,13 +2800,6 @@ class PlayState extends MusicBeatSubState
         // If score or rank are better, save the highest one.
         // If neither are higher, nothing will change.
         Save.instance.applySongRank(currentSong.id, suffixedDifficulty, data);
-
-        if (isNewHighscore)
-        {
-          #if newgrounds
-          NGio.postScore(score, currentSong.id);
-          #end
-        }
       }
     }
 
@@ -2947,8 +2817,6 @@ class PlayState extends MusicBeatSubState
       {
         if (currentSong.validScore)
         {
-          NGio.unlockMedal(60961);
-
           var data =
             {
               score: PlayStatePlaylist.campaignScore,
@@ -2970,9 +2838,6 @@ class PlayState extends MusicBeatSubState
           if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
             Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
-            #if newgrounds
-            NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
-            #end
             isNewHighscore = true;
           }
         }

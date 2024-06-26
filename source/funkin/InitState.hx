@@ -32,9 +32,6 @@ import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
-#if discord_rpc
-import Discord.DiscordClient;
-#end
 
 /**
  * A core class which performs initialization of the game.
@@ -110,24 +107,6 @@ class InitState extends FlxState
       new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
     // Don't play transition in when entering the title state.
     FlxTransitionableState.skipNextTransIn = true;
-
-    //
-    // NEWGROUNDS API SETUP
-    //
-    #if newgrounds
-    NGio.init();
-    #end
-
-    //
-    // DISCORD API SETUP
-    //
-    #if discord_rpc
-    DiscordClient.initialize();
-
-    Application.current.onExit.add(function(exitCode) {
-      DiscordClient.shutdown();
-    });
-    #end
 
     //
     // ANDROID SETUP

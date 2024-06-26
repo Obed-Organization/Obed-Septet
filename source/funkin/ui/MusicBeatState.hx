@@ -118,7 +118,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     for (key in FlxG.bitmap._cache.keys())
     {
       var obj = FlxG.bitmap._cache.get(key);
-      if (obj != null && !key.startsWith('assets/images'))
+      if (obj != null && key.startsWith('assets/shared/characters') || key.startsWith('assets/week'))
       {
         Assets.cache.removeBitmapData(key);
         FlxG.bitmap._cache.remove(key);

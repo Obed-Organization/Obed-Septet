@@ -323,29 +323,6 @@ class BaseCharacter extends Bopper
     this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
   }
 
-  public function initHealthIcon(isOpponent:Bool):Void
-  {
-    if (!isOpponent)
-    {
-      if (PlayState.instance.iconP1 == null)
-      {
-        trace('[WARN] Player 1 health icon not found!');
-        return;
-      }
-      PlayState.instance.iconP1.configure(_data.healthIcon);
-      PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
-    }
-    else
-    {
-      if (PlayState.instance.iconP2 == null)
-      {
-        trace('[WARN] Player 2 health icon not found!');
-        return;
-      }
-      PlayState.instance.iconP2.configure(_data.healthIcon);
-    }
-  }
-
   public override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
