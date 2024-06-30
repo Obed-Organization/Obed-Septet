@@ -195,9 +195,9 @@ class PlayState extends MusicBeatSubState
   public var deathCounter:Int = 0;
 
   /**
-   * The player's current health.
+   * The both players current health.
    */
-  public var health:Float = Constants.HEALTH_STARTING;
+  public var healthArray:Array<Float> = [Constants.HEALTH_STARTING, Constants.HEALTH_STARTING];
 
   /**
    * The player's current score.
@@ -399,7 +399,7 @@ class PlayState extends MusicBeatSubState
 
   /**
    * The displayed value of enemy's health.
-   * Used to provide smooth animations based on linear interpolation of the player's health.
+   * Used to provide smooth animations based on linear interpolation of the enemy's health.
    */
   var healthLerpP2:Float = Constants.HEALTH_STARTING;
 
@@ -455,13 +455,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * The bar which displays the player's health.
-   * Dynamically updated based on the value of `healthLerpP1` (which is based on `health`).
+   * Dynamically updated based on the value of `healthLerpP1` (which is based on `healthArray's first element`).
    */
   public var barP1:FlxBar;
 
   /**
    * The bar which displays the enemy's health.
-   * Dynamically updated based on the value of `healthLerpP2` (which is based on `health`).
+   * Dynamically updated based on the value of `healthLerpP2` (which is based on `healthArray's second element`).
    */
   public var barP2:FlxBar;
 
@@ -919,7 +919,7 @@ class PlayState extends MusicBeatSubState
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-      health = Constants.HEALTH_STARTING;
+      healthArray[0] = healthArray[1] = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
       Countdown.performCountdown(currentStageId.startsWith('school'));
@@ -1010,8 +1010,11 @@ class PlayState extends MusicBeatSubState
     }
 
     // Cap health.
-    if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
-    if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
+    if (healthArray[0] > Constants.HEALTH_MAX) healthArray[0] = Constants.HEALTH_MAX;
+    if (healthArray[0] < Constants.HEALTH_MIN) healthArray[0] = Constants.HEALTH_MIN;
+
+    if (healthArray[1] > Constants.HEALTH_MAX) healthArray[1] = Constants.HEALTH_MAX;
+    if (healthArray[1] < Constants.HEALTH_MIN) healthArray[1] = Constants.HEALTH_MIN;
 
     // Apply camera zoom + multipliers.
     if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
@@ -1027,7 +1030,8 @@ class PlayState extends MusicBeatSubState
     {
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
-    FlxG.watch.addQuick('health', health);
+    FlxG.watch.addQuick('playerHealth', healthArray[0]);
+    FlxG.watch.addQuick('enemyHealth', healthArray[1]);
     FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
     // TODO: Add a song event for Handle GF dance speed.
@@ -1038,19 +1042,19 @@ class PlayState extends MusicBeatSubState
       // RESET = Quick Game Over Screen
       if (controls.RESET)
       {
-        health = Constants.HEALTH_MIN;
+        healthArray[0] = Constants.HEALTH_MIN;
         trace('RESET = True');
       }
 
       #if CAN_CHEAT // brandon's a pussy
       if (controls.CHEAT)
       {
-        health += 0.25 * Constants.HEALTH_MAX; // +25% health.
+        healthArray[0] += 0.25 * Constants.HEALTH_MAX; // +25% health.
         trace('User is cheating!');
       }
       #end
 
-      if (health <= Constants.HEALTH_MIN && !isPracticeMode && !isPlayerDying)
+      if (healthArray[0] <= Constants.HEALTH_MIN && !isPracticeMode && !isPlayerDying)
       {
         vocals.pause();
 
@@ -1120,8 +1124,10 @@ class PlayState extends MusicBeatSubState
     songScore = 0;
     updateScoreText();
 
-    health = Constants.HEALTH_STARTING;
-    healthLerpP1 = healthLerpP2 = health;
+    healthArray[0] = healthArray[1] = Constants.HEALTH_STARTING;
+
+    healthLerpP1 = healthArray[0];
+    healthLerpP2 = healthArray[1];
 
     barP1.value = healthLerpP1;
     barP2.value = healthLerpP2;
@@ -1513,7 +1519,7 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-   * Initializes the health bar on the HUD.
+   * Initializes the health bars on the HUD.
    */
   function initHealthBars():Void
   {
@@ -1989,8 +1995,8 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
-      healthLerpP1 = FlxMath.lerp(healthLerpP1, health, 0.15);
-      healthLerpP2 = Constants.HEALTH_MAX - healthLerpP1;
+      healthLerpP1 = FlxMath.lerp(healthLerpP1, healthArray[0], 0.15);
+      healthLerpP2 = FlxMath.lerp(healthLerpP2, healthArray[1], 0.15);
     }
   }
 
@@ -2046,7 +2052,7 @@ class PlayState extends MusicBeatSubState
           note.holdNoteSprite.missedNote = true;
         }
       }
-      else if (Conductor.instance.songPosition > hitWindowCenter)
+      else if (Conductor.instance.songPosition > hitWindowCenter && FlxG.random.bool(10))
       {
         if (note.hasBeenHit) continue;
 
@@ -2062,13 +2068,15 @@ class PlayState extends MusicBeatSubState
         // Command the opponent to hit the note on time.
         // NOTE: This is what handles the strumline and cleaning up the note itself!
         opponentStrumline.hitNote(note);
+        vocals.opponentVolume = 1;
+        healthArray[1] += Constants.HEALTH_GOOD_BONUS;
 
         if (note.holdNoteSprite != null)
         {
           opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
         }
       }
-      else if (Conductor.instance.songPosition > hitWindowStart)
+      else if (Conductor.instance.songPosition > hitWindowStart && FlxG.random.bool(10))
       {
         if (note.hasBeenHit || note.hasMissed) continue;
 
@@ -2083,6 +2091,26 @@ class PlayState extends MusicBeatSubState
         note.mayHit = false;
         note.hasMissed = false;
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+
+      // This becomes true when the note leaves the hit window.
+      // It might still be on screen.
+      if (note.hasMissed && !note.handledMiss)
+      {
+        // Call an event to allow canceling the note miss.
+        // NOTE: This is what handles the character animations!
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, -Constants.HEALTH_MISS_PENALTY, 0, true);
+        dispatchEvent(event);
+
+        // Calling event.cancelEvent() skips all the other logic! Neat!
+        if (event.eventCanceled) continue;
+
+        // Judge the miss.
+        // NOTE: This is what handles the scoring.
+        trace('Missed note! ${note.noteData}');
+        onEnemyNoteMiss(note, event.playSound, event.healthChange);
+
+        note.handledMiss = true;
       }
     }
 
@@ -2212,7 +2240,7 @@ class PlayState extends MusicBeatSubState
         // Grant the player health.
         if (!isBotPlayMode)
         {
-          health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
+          healthArray[0] += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
           songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
         }
 
@@ -2463,6 +2491,24 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * Called when a note leaves the screen and is considered missed by the player.
+   * @param note
+   */
+  function onEnemyNoteMiss(note:NoteSprite, playSound:Bool = false, healthChange:Float):Void
+  {
+    // If we are here, we already CALLED the onEnemyNoteMiss script hook!
+    healthArray[1] += healthChange;
+
+    vocals.opponentVolume = 0;
+
+    if (playSound)
+    {
+      vocals.opponentVolume = 0;
+      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+    }
+  }
+
+  /**
    * Called when a player presses a key with no note present.
    * Scripts can modify the amount of health/score lost, whether player animations or sounds are used,
    * or even cancel the event entirely.
@@ -2482,7 +2528,7 @@ class PlayState extends MusicBeatSubState
     // Calling event.cancelEvent() skips animations and penalties. Neat!
     if (event.eventCanceled) return;
 
-    health += event.healthChange;
+    healthArray[0] += event.healthChange;
     songScore += event.scoreChange;
 
     if (!isPracticeMode)
@@ -2555,10 +2601,10 @@ class PlayState extends MusicBeatSubState
     if (FlxG.keys.justPressed.ONE) endSong(true);
 
     // 2: Gain 10% health.
-    if (FlxG.keys.justPressed.TWO) health += 0.1 * Constants.HEALTH_MAX;
+    if (FlxG.keys.justPressed.TWO) healthArray[0] += 0.1 * Constants.HEALTH_MAX;
 
     // 3: Lose 5% health.
-    if (FlxG.keys.justPressed.THREE) health -= 0.05 * Constants.HEALTH_MAX;
+    if (FlxG.keys.justPressed.THREE) healthArray[0] -= 0.05 * Constants.HEALTH_MAX;
     #end
 
     #if (debug || FORCE_DEBUG_VERSION)
@@ -2591,7 +2637,7 @@ class PlayState extends MusicBeatSubState
       case 'miss':
         Highscore.tallies.missed += 1;
     }
-    health += healthChange;
+    healthArray[0] += healthChange;
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
