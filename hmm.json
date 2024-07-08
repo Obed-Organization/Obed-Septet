@@ -130,7 +130,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "mingw-fix",
+      "ref": "develop2",
       "url": "https://github.com/Obed-Organization/lime.git"
     },
     {
