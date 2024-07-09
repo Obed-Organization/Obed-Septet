@@ -198,11 +198,6 @@ class Constants
   public static final DEFAULT_CHARACTER:String = 'bf';
 
   /**
-   * Default player character for health icons.
-   */
-  public static final DEFAULT_HEALTH_ICON:String = 'face';
-
-  /**
    * Default stage for charts.
    */
   public static final DEFAULT_STAGE:String = 'mainStage';
@@ -401,7 +396,7 @@ class Constants
   /**
    * The amount of health the player loses upon pressing a key when no note is there.
    */
-  public static final HEALTH_GHOST_MISS_PENALTY:Float = 2.0 / 100.0 * HEALTH_MAX; // 2.0%
+  public static final HEALTH_GHOST_MISS_PENALTY:Float = 5.0 / 100.0 * HEALTH_MAX; // 5.0%
 
   /**
    * The amount of health the player loses upon letting go of a hold note while it is still going.

@@ -197,7 +197,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The both players current health.
    */
-  public var healthArray:Array<Float> = [Constants.HEALTH_MAX, Constants.HEALTH_MAX];
+  public var healthArray:Array<Float> = [Constants.HEALTH_MAX, Constants.HEALTH_MAX]; // max health LOL
 
   /**
    * The player's current score.
@@ -395,13 +395,13 @@ class PlayState extends MusicBeatSubState
    * The displayed value of the player's health.
    * Used to provide smooth animations based on linear interpolation of the player's health.
    */
-  var healthLerpP1:Float = Constants.HEALTH_MAX;
+  var healthLerpP1:Float = 0;
 
   /**
    * The displayed value of enemy's health.
    * Used to provide smooth animations based on linear interpolation of the enemy's health.
    */
-  var healthLerpP2:Float = Constants.HEALTH_MAX;
+  var healthLerpP2:Float = 0;
 
   /**
    * How long the user has held the "Skip Video Cutscene" button for.
@@ -1528,7 +1528,7 @@ class PlayState extends MusicBeatSubState
     barLineP1.zIndex = 800;
     barLineP1.flipX = true;
 
-    barP1 = new FlxBar(barLineP1.x, barLineP1.y, LEFT_TO_RIGHT, Std.int(barLineP1.width), Std.int(barLineP1.height), this, 'healthLerpP1', 0, 2);
+    barP1 = new FlxBar(barLineP1.x, barLineP1.y, LEFT_TO_RIGHT, Std.int(barLineP1.width), Std.int(barLineP1.height), this, 'healthLerpP1', Constants.HEALTH_MIN, Constants.HEALTH_MAX);
     barP1.scale.set(0.3, 0.3);
     barP1.zIndex = barLineP1.zIndex + 1;
     barP1.flipX = true;
@@ -1541,7 +1541,7 @@ class PlayState extends MusicBeatSubState
     barLineP2.scale.set(0.3, 0.3);
     barLineP2.zIndex = 800;
 
-    barP2 = new FlxBar(barLineP2.x, barLineP2.y, LEFT_TO_RIGHT, Std.int(barLineP2.width), Std.int(barLineP2.height), this, 'healthLerpP2', 0, 2);
+    barP2 = new FlxBar(barLineP2.x, barLineP2.y, LEFT_TO_RIGHT, Std.int(barLineP2.width), Std.int(barLineP2.height), this, 'healthLerpP2', Constants.HEALTH_MIN, Constants.HEALTH_MAX);
     barP2.scale.set(0.3, 0.3);
     barP2.zIndex = barLineP2.zIndex + 1;
     barP2.createImageBar(Paths.image('healthBars/hpotric'), Paths.image('healthBars/hppolicBF'));
@@ -1993,12 +1993,17 @@ class PlayState extends MusicBeatSubState
     if (isBotPlayMode)
     {
       healthLerpP1 = Constants.HEALTH_MAX;
-      healthLerpP2 = 0;
+      healthLerpP2 = Constants.HEALTH_MIN;
     }
     else
     {
-      healthLerpP1 = FlxMath.lerp(healthLerpP1, healthArray[0], 0.15);
-      healthLerpP2 = FlxMath.lerp(healthLerpP2, healthArray[1], 0.15);
+      if (Conductor.instance.currentStepTime < 4) {
+        healthLerpP1 = FlxMath.lerp(healthLerpP1, healthArray[0], 0.01);
+        healthLerpP2 = FlxMath.lerp(healthLerpP2, healthArray[1], 0.01);
+      } else {
+        healthLerpP1 = FlxMath.lerp(healthLerpP1, healthArray[0], 0.05);
+        healthLerpP2 = FlxMath.lerp(healthLerpP2, healthArray[1], 0.05);
+      }
     }
   }
 
@@ -2054,7 +2059,7 @@ class PlayState extends MusicBeatSubState
           note.holdNoteSprite.missedNote = true;
         }
       }
-      else if (Conductor.instance.songPosition > hitWindowCenter && FlxG.random.bool(2))
+      else if (Conductor.instance.songPosition > hitWindowCenter && FlxG.random.bool(92))
       {
         if (note.hasBeenHit) continue;
 
@@ -2077,7 +2082,7 @@ class PlayState extends MusicBeatSubState
           opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
         }
       }
-      else if (Conductor.instance.songPosition > hitWindowStart && FlxG.random.bool(2))
+      else if (Conductor.instance.songPosition > hitWindowStart && FlxG.random.bool(80))
       {
         if (note.hasBeenHit || note.hasMissed) continue;
 
