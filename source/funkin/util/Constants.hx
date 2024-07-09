@@ -178,19 +178,19 @@ class Constants
   /**
    * Default difficulty for charts.
    */
-  public static final DEFAULT_DIFFICULTY:String = 'normal';
+  public static final DEFAULT_DIFFICULTY:String = 'obed';
 
   /**
    * Default list of difficulties for charts.
    * Assumes no Erect mode, etc.
    */
-  public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
+  public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['obed', 'pussy'];
 
   /**
    * List of all difficulties used by the base game.
    * Includes Erect and Nightmare.
    */
-  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
+  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['obed', 'pussy'];
 
   /**
    * Default player character for charts.
@@ -210,7 +210,7 @@ class Constants
   /**
    * Default song for if the PlayState messes up.
    */
-  public static final DEFAULT_SONG:String = 'tutorial';
+  public static final DEFAULT_SONG:String = '8eight';
 
   /**
    * Default variation for charts.
@@ -220,7 +220,7 @@ class Constants
   /**
    * Standardized variations for charts
    */
-  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
+  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default'];
 
   /**
    * The default intensity multiplier for camera bops.
@@ -296,7 +296,7 @@ class Constants
   /**
    * The maximum interval within which a note can be hit, in milliseconds.
    */
-  public static final HIT_WINDOW_MS:Float = 160.0;
+  public static final HIT_WINDOW_MS:Float = 80.0;
 
   /**
    * Constant for the number of seconds in a minute.
@@ -379,12 +379,7 @@ class Constants
    * The player's maximum health.
    * If the player is at this value, they can't gain any more health.
    */
-  public static final HEALTH_MAX:Float = 2.0;
-
-  /**
-   * The player's starting health.
-   */
-  public static final HEALTH_STARTING = HEALTH_MAX / 2.0;
+  public static final HEALTH_MAX:Float = 1.0;
 
   /**
    * The player's minimum health.
@@ -393,35 +388,10 @@ class Constants
   public static final HEALTH_MIN:Float = 0.0;
 
   /**
-   * The amount of health the player gains when hitting a note with the KILLER rating.
-   */
-  public static final HEALTH_KILLER_BONUS:Float = 2.0 / 100.0 * HEALTH_MAX; // +2.0%
-
-  /**
-   * The amount of health the player gains when hitting a note with the SICK rating.
-   */
-  public static final HEALTH_SICK_BONUS:Float = 1.5 / 100.0 * HEALTH_MAX; // +1.0%
-
-  /**
-   * The amount of health the player gains when hitting a note with the GOOD rating.
-   */
-  public static final HEALTH_GOOD_BONUS:Float = 0.75 / 100.0 * HEALTH_MAX; // +0.75%
-
-  /**
-   * The amount of health the player gains when hitting a note with the BAD rating.
-   */
-  public static final HEALTH_BAD_BONUS:Float = 0.0 / 100.0 * HEALTH_MAX; // +0.0%
-
-  /**
    * The amount of health the player gains when hitting a note with the SHIT rating.
    * If negative, the player will actually lose health.
    */
   public static final HEALTH_SHIT_BONUS:Float = -1.0 / 100.0 * HEALTH_MAX; // -1.0%
-
-  /**
-   * The amount of health the player gains, while holding a hold note, per second.
-   */
-  public static final HEALTH_HOLD_BONUS_PER_SECOND:Float = 7.5 / 100.0 * HEALTH_MAX; // +7.5% / second
 
   /**
    * The amount of health the player loses upon missing a note.
@@ -436,12 +406,7 @@ class Constants
   /**
    * The amount of health the player loses upon letting go of a hold note while it is still going.
    */
-  public static final HEALTH_HOLD_DROP_PENALTY:Float = 0.0; // 0.0%
-
-  /**
-   * The amount of health the player loses upon hitting a mine.
-   */
-  public static final HEALTH_MINE_PENALTY:Float = 15.0 / 100.0 * HEALTH_MAX; // 15.0%
+  public static final HEALTH_HOLD_DROP_PENALTY:Float = -1.0 / 100.0 * HEALTH_MAX; // -1.0%
 
   /**
    * SCORE VALUES
@@ -454,7 +419,6 @@ class Constants
    */
   public static final SCORE_HOLD_BONUS_PER_SECOND:Float = 250.0;
 
-  public static final JUDGEMENT_KILLER_COMBO_BREAK:Bool = false;
   public static final JUDGEMENT_SICK_COMBO_BREAK:Bool = false;
   public static final JUDGEMENT_GOOD_COMBO_BREAK:Bool = false;
   public static final JUDGEMENT_BAD_COMBO_BREAK:Bool = true;

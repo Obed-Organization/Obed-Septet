@@ -197,7 +197,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The both players current health.
    */
-  public var healthArray:Array<Float> = [Constants.HEALTH_STARTING, Constants.HEALTH_STARTING];
+  public var healthArray:Array<Float> = [Constants.HEALTH_MAX, Constants.HEALTH_MAX];
 
   /**
    * The player's current score.
@@ -395,13 +395,13 @@ class PlayState extends MusicBeatSubState
    * The displayed value of the player's health.
    * Used to provide smooth animations based on linear interpolation of the player's health.
    */
-  var healthLerpP1:Float = Constants.HEALTH_STARTING;
+  var healthLerpP1:Float = Constants.HEALTH_MAX;
 
   /**
    * The displayed value of enemy's health.
    * Used to provide smooth animations based on linear interpolation of the enemy's health.
    */
-  var healthLerpP2:Float = Constants.HEALTH_STARTING;
+  var healthLerpP2:Float = Constants.HEALTH_MAX;
 
   /**
    * How long the user has held the "Skip Video Cutscene" button for.
@@ -919,7 +919,7 @@ class PlayState extends MusicBeatSubState
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-      healthArray[0] = healthArray[1] = Constants.HEALTH_STARTING;
+      healthArray[0] = healthArray[1] = Constants.HEALTH_MAX;
       songScore = 0;
       Highscore.tallies.combo = 0;
       Countdown.performCountdown(currentStageId.startsWith('school'));
@@ -1124,7 +1124,7 @@ class PlayState extends MusicBeatSubState
     songScore = 0;
     updateScoreText();
 
-    healthArray[0] = healthArray[1] = Constants.HEALTH_STARTING;
+    healthArray[0] = healthArray[1] = Constants.HEALTH_MAX;
 
     healthLerpP1 = healthArray[0];
     healthLerpP2 = healthArray[1];
@@ -1527,25 +1527,27 @@ class PlayState extends MusicBeatSubState
     barLineP1.scale.set(0.3, 0.3);
     barLineP1.zIndex = 800;
     barLineP1.flipX = true;
-    add(barLineP1);
 
     barP1 = new FlxBar(barLineP1.x, barLineP1.y, LEFT_TO_RIGHT, Std.int(barLineP1.width), Std.int(barLineP1.height), this, 'healthLerpP1', 0, 2);
     barP1.scale.set(0.3, 0.3);
     barP1.zIndex = barLineP1.zIndex + 1;
     barP1.flipX = true;
     barP1.createImageBar(Paths.image('healthBars/hpotric'), Paths.image('healthBars/hppolicgolda'));
+
     add(barP1);
+    add(barLineP1);
 
     barLineP2 = FunkinSprite.create(-500, 250, 'healthBars/hpbarline');
     barLineP2.scale.set(0.3, 0.3);
     barLineP2.zIndex = 800;
-    add(barLineP2);
 
     barP2 = new FlxBar(barLineP2.x, barLineP2.y, LEFT_TO_RIGHT, Std.int(barLineP2.width), Std.int(barLineP2.height), this, 'healthLerpP2', 0, 2);
     barP2.scale.set(0.3, 0.3);
     barP2.zIndex = barLineP2.zIndex + 1;
     barP2.createImageBar(Paths.image('healthBars/hpotric'), Paths.image('healthBars/hppolicBF'));
+
     add(barP2);
+    add(barLineP2);
 
     // The score text below the health bar.
     scoreText = new FlxText(barP2.x + barP2.width - 190, barP2.y + 30, 0, '', 20);
@@ -1555,10 +1557,10 @@ class PlayState extends MusicBeatSubState
     // add(scoreText);
 
     // Move the bars to the HUD camera.
-    barLineP1.cameras = [camHUD];
     barP1.cameras = [camHUD];
-    barLineP2.cameras = [camHUD];
+    barLineP1.cameras = [camHUD];
     barP2.cameras = [camHUD];
+    barLineP2.cameras = [camHUD];
     scoreText.cameras = [camHUD];
   }
 
@@ -2052,7 +2054,7 @@ class PlayState extends MusicBeatSubState
           note.holdNoteSprite.missedNote = true;
         }
       }
-      else if (Conductor.instance.songPosition > hitWindowCenter && FlxG.random.bool(10))
+      else if (Conductor.instance.songPosition > hitWindowCenter && FlxG.random.bool(2))
       {
         if (note.hasBeenHit) continue;
 
@@ -2069,14 +2071,13 @@ class PlayState extends MusicBeatSubState
         // NOTE: This is what handles the strumline and cleaning up the note itself!
         opponentStrumline.hitNote(note);
         vocals.opponentVolume = 1;
-        healthArray[1] += Constants.HEALTH_GOOD_BONUS;
 
         if (note.holdNoteSprite != null)
         {
           opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
         }
       }
-      else if (Conductor.instance.songPosition > hitWindowStart && FlxG.random.bool(10))
+      else if (Conductor.instance.songPosition > hitWindowStart && FlxG.random.bool(2))
       {
         if (note.hasBeenHit || note.hasMissed) continue;
 
@@ -2239,10 +2240,7 @@ class PlayState extends MusicBeatSubState
       {
         // Grant the player health.
         if (!isBotPlayMode)
-        {
-          healthArray[0] += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
           songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
-        }
 
         // Make sure the player keeps singing while the note is held by the bot.
         if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
@@ -2399,13 +2397,10 @@ class PlayState extends MusicBeatSubState
     switch (daRating)
     {
       case 'sick':
-        healthChange = Constants.HEALTH_SICK_BONUS;
         isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
-        healthChange = Constants.HEALTH_GOOD_BONUS;
         isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
-        healthChange = Constants.HEALTH_BAD_BONUS;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
