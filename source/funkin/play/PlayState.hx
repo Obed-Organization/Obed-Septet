@@ -1523,7 +1523,7 @@ class PlayState extends MusicBeatSubState
    */
   function initHealthBars():Void
   {
-    barLineP1 = FunkinSprite.create(200, 250, 'healthBars/hpbarline');
+    barLineP1 = FunkinSprite.create(255, 275, 'healthBars/hpbarline');
     barLineP1.scale.set(0.3, 0.3);
     barLineP1.zIndex = 800;
     barLineP1.flipX = true;
@@ -1537,7 +1537,7 @@ class PlayState extends MusicBeatSubState
     add(barP1);
     add(barLineP1);
 
-    barLineP2 = FunkinSprite.create(-500, 250, 'healthBars/hpbarline');
+    barLineP2 = FunkinSprite.create(-500, 275, 'healthBars/hpbarline');
     barLineP2.scale.set(0.3, 0.3);
     barLineP2.zIndex = 800;
 
