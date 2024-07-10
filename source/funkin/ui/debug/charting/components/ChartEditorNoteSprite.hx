@@ -20,7 +20,7 @@ class ChartEditorNoteSprite extends FlxSprite
   /**
    * The list of available note skin to validate against.
    */
-  public static final NOTE_STYLES:Array<String> = ['funkin', 'pixel'];
+  public static final NOTE_STYLES:Array<String> = ['funkin', 'blue', 'red', 'yellow'];
 
   /**
    * The ChartEditorState this note belongs to.
@@ -115,19 +115,6 @@ class ChartEditorNoteSprite extends FlxSprite
 
     for (frame in frameCollectionNormal.frames)
     {
-      noteFrameCollection.pushFrame(frame);
-    }
-
-    // Pixel notes
-    var graphicPixel = FlxG.bitmap.add(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), false, null);
-    if (graphicPixel == null) trace('ERROR: Could not load graphic: ' + Paths.image('weeb/pixelUI/arrows-pixels', 'week6'));
-    var frameCollectionPixel = FlxTileFrames.fromGraphic(graphicPixel, new FlxPoint(17, 17));
-    for (i in 0...frameCollectionPixel.frames.length)
-    {
-      var frame:Null<FlxFrame> = frameCollectionPixel.frames[i];
-      if (frame == null) continue;
-
-      frame.name = 'pixel' + i;
       noteFrameCollection.pushFrame(frame);
     }
   }

@@ -1523,7 +1523,7 @@ class PlayState extends MusicBeatSubState
    */
   function initHealthBars():Void
   {
-    barLineP1 = FunkinSprite.create(255, 275, 'healthBars/hpbarline');
+    barLineP1 = FunkinSprite.create(255, 275, 'obedbars/barline');
     barLineP1.scale.set(0.3, 0.3);
     barLineP1.zIndex = 800;
     barLineP1.flipX = true;
@@ -1532,19 +1532,19 @@ class PlayState extends MusicBeatSubState
     barP1.scale.set(0.3, 0.3);
     barP1.zIndex = barLineP1.zIndex + 1;
     barP1.flipX = true;
-    barP1.createImageBar(Paths.image('healthBars/hpotric'), Paths.image('healthBars/hppolicgolda'));
+    barP1.createImageBar(Paths.image('obedbars/barblank'), Paths.image('obedbars/barred'));
 
     add(barP1);
     add(barLineP1);
 
-    barLineP2 = FunkinSprite.create(-500, 275, 'healthBars/hpbarline');
+    barLineP2 = FunkinSprite.create(-500, 275, 'obedbars/barline');
     barLineP2.scale.set(0.3, 0.3);
     barLineP2.zIndex = 800;
 
     barP2 = new FlxBar(barLineP2.x, barLineP2.y, LEFT_TO_RIGHT, Std.int(barLineP2.width), Std.int(barLineP2.height), this, 'healthLerpP2', Constants.HEALTH_MIN, Constants.HEALTH_MAX);
     barP2.scale.set(0.3, 0.3);
     barP2.zIndex = barLineP2.zIndex + 1;
-    barP2.createImageBar(Paths.image('healthBars/hpotric'), Paths.image('healthBars/hppolicBF'));
+    barP2.createImageBar(Paths.image('obedbars/barblank'), Paths.image('obedbars/baryellow'));
 
     add(barP2);
     add(barLineP2);
