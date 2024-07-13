@@ -449,11 +449,6 @@ class PlayState extends MusicBeatSubState
    * RENDER OBJECTS
    */
   /**
-   * The FlxText which displays the current score.
-   */
-  var scoreText:FlxText;
-
-  /**
    * The bar which displays the player's health.
    * Dynamically updated based on the value of `healthLerpP1` (which is based on `healthArray's first element`).
    */
@@ -511,6 +506,21 @@ class PlayState extends MusicBeatSubState
    */
   var pauseButton:FunkinSprite;
   #end
+
+  /**
+   * Cool "TAB" text thingy!!!
+   */
+  var scoreTxt:FlxText;
+
+  /**
+   * Score of your opponent.
+   */
+  var enemyScore:Int = 0;
+
+  /**
+   * Misses of your opponent.
+   */
+  var enemyMisses:Int = 0;
 
   /**
    * PROPERTIES
@@ -921,6 +931,7 @@ class PlayState extends MusicBeatSubState
 
       healthArray[0] = healthArray[1] = Constants.HEALTH_MAX;
       songScore = 0;
+      enemyScore = 0;
       Highscore.tallies.combo = 0;
       Countdown.performCountdown(currentStageId.startsWith('school'));
 
@@ -1008,6 +1019,7 @@ class PlayState extends MusicBeatSubState
         }
       }
     }
+    if (controls.SHOW_SCORE) showScore();
 
     // Cap health.
     if (healthArray[0] > Constants.HEALTH_MAX) healthArray[0] = Constants.HEALTH_MAX;
@@ -1122,6 +1134,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.clean();
 
     songScore = 0;
+    enemyScore = 0;
     updateScoreText();
 
     healthArray[0] = healthArray[1] = Constants.HEALTH_MAX;
@@ -1523,12 +1536,13 @@ class PlayState extends MusicBeatSubState
    */
   function initHealthBars():Void
   {
-    barLineP1 = FunkinSprite.create(255, 275, 'obedbars/barline');
+    barLineP1 = FunkinSprite.create(235, 275, 'obedbars/barline');
     barLineP1.scale.set(0.3, 0.3);
     barLineP1.zIndex = 800;
     barLineP1.flipX = true;
 
-    barP1 = new FlxBar(barLineP1.x, barLineP1.y, LEFT_TO_RIGHT, Std.int(barLineP1.width), Std.int(barLineP1.height), this, 'healthLerpP1', Constants.HEALTH_MIN, Constants.HEALTH_MAX);
+    barP1 = new FlxBar(barLineP1.x, barLineP1.y, LEFT_TO_RIGHT, Std.int(barLineP1.width), Std.int(barLineP1.height), this, 'healthLerpP1',
+      Constants.HEALTH_MIN, Constants.HEALTH_MAX);
     barP1.scale.set(0.3, 0.3);
     barP1.zIndex = barLineP1.zIndex + 1;
     barP1.flipX = true;
@@ -1537,11 +1551,12 @@ class PlayState extends MusicBeatSubState
     add(barP1);
     add(barLineP1);
 
-    barLineP2 = FunkinSprite.create(-500, 275, 'obedbars/barline');
+    barLineP2 = FunkinSprite.create(-490, 275, 'obedbars/barline');
     barLineP2.scale.set(0.3, 0.3);
     barLineP2.zIndex = 800;
 
-    barP2 = new FlxBar(barLineP2.x, barLineP2.y, LEFT_TO_RIGHT, Std.int(barLineP2.width), Std.int(barLineP2.height), this, 'healthLerpP2', Constants.HEALTH_MIN, Constants.HEALTH_MAX);
+    barP2 = new FlxBar(barLineP2.x, barLineP2.y, LEFT_TO_RIGHT, Std.int(barLineP2.width), Std.int(barLineP2.height), this, 'healthLerpP2',
+      Constants.HEALTH_MIN, Constants.HEALTH_MAX);
     barP2.scale.set(0.3, 0.3);
     barP2.zIndex = barLineP2.zIndex + 1;
     barP2.createImageBar(Paths.image('obedbars/barblank'), Paths.image('obedbars/baryellow'));
@@ -1549,19 +1564,18 @@ class PlayState extends MusicBeatSubState
     add(barP2);
     add(barLineP2);
 
-    // The score text below the health bar.
-    scoreText = new FlxText(barP2.x + barP2.width - 190, barP2.y + 30, 0, '', 20);
-    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    scoreText.scrollFactor.set();
-    scoreText.zIndex = 802;
-    // add(scoreText);
+    scoreTxt = new FlxText(250, -20, 0, "", 20);
+    scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scoreTxt.scrollFactor.set();
+    scoreTxt.zIndex = 802;
+    add(scoreTxt);
 
     // Move the bars to the HUD camera.
     barP1.cameras = [camHUD];
     barLineP1.cameras = [camHUD];
     barP2.cameras = [camHUD];
     barLineP2.cameras = [camHUD];
-    scoreText.cameras = [camHUD];
+    scoreTxt.cameras = [camHUD];
   }
 
   /**
@@ -1974,15 +1988,27 @@ class PlayState extends MusicBeatSubState
    */
   function updateScoreText():Void
   {
-    // TODO: Add functionality for modules to update the score text.
-    if (isBotPlayMode)
-    {
-      scoreText.text = 'Bot Play Enabled';
-    }
+    scoreTxt.text = "Enemy Score: 0" /*enemyScore*/ + " | Enemy Missed:" + enemyMisses + " || Player Score:" + songScore + " | Player Missed:"
+      + Highscore.tallies.missed;
+    scoreTxt.screenCenter(X);
+  }
+
+  /**
+   * Shows score on pressing the bind.
+   */
+  var scoreTween:FlxTween;
+
+  var scoreTxtVisible:Bool = false;
+
+  function showScore()
+  {
+    if (scoreTween != null) scoreTween.cancel();
+
+    if (!scoreTxtVisible) scoreTween = FlxTween.tween(scoreTxt, {y: 18}, 0.5, {ease: FlxEase.cubeInOut});
     else
-    {
-      scoreText.text = 'Score:' + songScore;
-    }
+      scoreTween = FlxTween.tween(scoreTxt, {y: -20}, 0.5, {ease: FlxEase.cubeInOut});
+
+    scoreTxtVisible = !scoreTxtVisible;
   }
 
   /**
@@ -1997,10 +2023,13 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
-      if (Conductor.instance.currentStepTime < 4) {
+      if (Conductor.instance.currentStepTime < 4)
+      {
         healthLerpP1 = FlxMath.lerp(healthLerpP1, healthArray[0], 0.01);
         healthLerpP2 = FlxMath.lerp(healthLerpP2, healthArray[1], 0.01);
-      } else {
+      }
+      else
+      {
         healthLerpP1 = FlxMath.lerp(healthLerpP1, healthArray[0], 0.05);
         healthLerpP2 = FlxMath.lerp(healthLerpP2, healthArray[1], 0.05);
       }
@@ -2053,6 +2082,8 @@ class PlayState extends MusicBeatSubState
         note.tooEarly = false;
         note.mayHit = false;
         note.hasMissed = true;
+
+        enemyMisses++;
 
         if (note.holdNoteSprite != null)
         {
@@ -2244,8 +2275,7 @@ class PlayState extends MusicBeatSubState
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Grant the player health.
-        if (!isBotPlayMode)
-          songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
+        if (!isBotPlayMode) songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
 
         // Make sure the player keeps singing while the note is held by the bot.
         if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())

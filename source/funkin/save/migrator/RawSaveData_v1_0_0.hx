@@ -44,6 +44,7 @@ typedef SaveControlsData_v1_0_0 =
   var ?UI_LEFT:Array<Int>;
   var ?UI_RIGHT:Array<Int>;
   var ?UI_UP:Array<Int>;
+  var ?SHOW_SCORE:Array<Int>;
   var ?VOLUME_DOWN:Array<Int>;
   var ?VOLUME_MUTE:Array<Int>;
   var ?VOLUME_UP:Array<Int>;

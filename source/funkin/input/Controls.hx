@@ -34,6 +34,7 @@ class Controls extends FlxActionSet
   var _ui_left = new FunkinAction(Action.UI_LEFT);
   var _ui_right = new FunkinAction(Action.UI_RIGHT);
   var _ui_down = new FunkinAction(Action.UI_DOWN);
+  var _show_score = new FunkinAction(Action.SHOW_SCORE);
   var _ui_upP = new FunkinAction(Action.UI_UP_P);
   var _ui_leftP = new FunkinAction(Action.UI_LEFT_P);
   var _ui_rightP = new FunkinAction(Action.UI_RIGHT_P);
@@ -236,6 +237,11 @@ class Controls extends FlxActionSet
   inline function get_RESET()
     return _reset.check();
 
+  public var SHOW_SCORE(get, never):Bool;
+
+  inline function get_SHOW_SCORE()
+    return _show_score.check();
+
   public var WINDOW_FULLSCREEN(get, never):Bool;
 
   inline function get_WINDOW_FULLSCREEN()
@@ -410,6 +416,7 @@ class Controls extends FlxActionSet
       case UI_DOWN: _ui_down;
       case UI_LEFT: _ui_left;
       case UI_RIGHT: _ui_right;
+      case SHOW_SCORE: _show_score;
       case NOTE_UP: _note_up;
       case NOTE_DOWN: _note_down;
       case NOTE_LEFT: _note_left;
@@ -465,6 +472,10 @@ class Controls extends FlxActionSet
         func(_ui_down, PRESSED);
         func(_ui_down, JUST_PRESSED);
         func(_ui_down, JUST_RELEASED);
+      case SHOW_SCORE:
+        func(_show_score, PRESSED);
+        func(_show_score, JUST_PRESSED);
+        func(_show_score, JUST_RELEASED);
       case NOTE_UP:
         func(_note_up, PRESSED);
         func(_note_up, JUST_PRESSED);
@@ -702,6 +713,7 @@ class Controls extends FlxActionSet
     bindKeys(Control.UI_DOWN, getDefaultKeybinds(scheme, Control.UI_DOWN));
     bindKeys(Control.UI_LEFT, getDefaultKeybinds(scheme, Control.UI_LEFT));
     bindKeys(Control.UI_RIGHT, getDefaultKeybinds(scheme, Control.UI_RIGHT));
+    bindKeys(Control.SHOW_SCORE, getDefaultKeybinds(scheme, Control.SHOW_SCORE));
     bindKeys(Control.NOTE_UP, getDefaultKeybinds(scheme, Control.NOTE_UP));
     bindKeys(Control.NOTE_DOWN, getDefaultKeybinds(scheme, Control.NOTE_DOWN));
     bindKeys(Control.NOTE_LEFT, getDefaultKeybinds(scheme, Control.NOTE_LEFT));
@@ -735,6 +747,7 @@ class Controls extends FlxActionSet
           case Control.UI_DOWN: return [S, FlxKey.DOWN];
           case Control.UI_LEFT: return [A, FlxKey.LEFT];
           case Control.UI_RIGHT: return [D, FlxKey.RIGHT];
+          case Control.SHOW_SCORE: return [FlxKey.TAB, F1];
           case Control.NOTE_UP: return [W, FlxKey.UP];
           case Control.NOTE_DOWN: return [S, FlxKey.DOWN];
           case Control.NOTE_LEFT: return [A, FlxKey.LEFT];
@@ -763,6 +776,7 @@ class Controls extends FlxActionSet
           case Control.UI_DOWN: return [S];
           case Control.UI_LEFT: return [A];
           case Control.UI_RIGHT: return [D];
+          case Control.SHOW_SCORE: return [TAB];
           case Control.NOTE_UP: return [W];
           case Control.NOTE_DOWN: return [S];
           case Control.NOTE_LEFT: return [A];
@@ -791,6 +805,7 @@ class Controls extends FlxActionSet
           case Control.UI_DOWN: return [FlxKey.DOWN];
           case Control.UI_LEFT: return [FlxKey.LEFT];
           case Control.UI_RIGHT: return [FlxKey.RIGHT];
+          case Control.SHOW_SCORE: return [FlxKey.TAB];
           case Control.NOTE_UP: return [FlxKey.UP];
           case Control.NOTE_DOWN: return [FlxKey.DOWN];
           case Control.NOTE_LEFT: return [FlxKey.LEFT];
@@ -881,6 +896,7 @@ class Controls extends FlxActionSet
       Control.UI_DOWN => getDefaultGamepadBinds(Control.UI_DOWN),
       Control.UI_LEFT => getDefaultGamepadBinds(Control.UI_LEFT),
       Control.UI_RIGHT => getDefaultGamepadBinds(Control.UI_RIGHT),
+      Control.SHOW_SCORE => getDefaultGamepadBinds(Control.SHOW_SCORE),
       Control.NOTE_UP => getDefaultGamepadBinds(Control.NOTE_UP),
       Control.NOTE_DOWN => getDefaultGamepadBinds(Control.NOTE_DOWN),
       Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT),
@@ -1347,6 +1363,7 @@ enum Control
   UI_LEFT;
   UI_RIGHT;
   UI_DOWN;
+  SHOW_SCORE;
   RESET;
   ACCEPT;
   BACK;
@@ -1390,6 +1407,7 @@ enum abstract Action(String) to String from String
   var UI_LEFT = "ui_left";
   var UI_RIGHT = "ui_right";
   var UI_DOWN = "ui_down";
+  var SHOW_SCORE = "showscore";
   var UI_UP_P = "ui_up-press";
   var UI_LEFT_P = "ui_left-press";
   var UI_RIGHT_P = "ui_right-press";

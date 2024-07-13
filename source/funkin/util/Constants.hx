@@ -497,7 +497,7 @@ class Constants
   /**
    * The horizontal offset of the strumline from the left edge of the screen.
    */
-  public static final STRUMLINE_X_OFFSET:Float = 48;
+  public static final STRUMLINE_X_OFFSET:Float = 70;
 
   /**
    * The vertical offset of the strumline from the top edge of the screen.

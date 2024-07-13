@@ -1120,6 +1120,12 @@ typedef SaveControlsData =
   var ?UI_DOWN:Array<Int>;
 
   /**
+   * Shows score in-game.
+   * @default `Show Score`
+   */
+  var ?SHOW_SCORE:Array<Int>;
+
+  /**
    * Keybind for hitting notes.
    * @default `A` and `Left Arrow`
    */
